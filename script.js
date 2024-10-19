@@ -19,7 +19,7 @@ function addTask() {
         tasks.push(task);
         localStorage.setItem('tasks', JSON.stringify(tasks)); // Save to local storage
         renderTasks();
-        document.getElementById('taskName').value = ''; // Clear input
+        document.getElementById('taskName').value = ''; 
     }
 }
 
