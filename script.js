@@ -1,35 +1,26 @@
-document.addEventListener('DOMContentLoaded', loadTasksFromLocalStorage);
+let tasks = [];
+let taskIdCounter = 1;
+const taskList = document.getElementById('taskList');
 
-const taskInput = document.getElementById('task-input');
-const taskList = document.getElementById('task-list');
-const searchInput = document.getElementById('search-input');
-const addTaskBtn = document.getElementById('add-task');
-const toggleTableBtn = document.getElementById('toggle-table');
-
-let tasks = JSON.parse(localStorage.getItem('tasks')) || [];
-
-addTaskBtn.addEventListener('click', addTask);
-searchInput.addEventListener('input', searchTasks);
-toggleTableBtn.addEventListener('click', toggleTaskList);
+// Load tasks from local storage when the page loads
+window.onload = function () {
+    const storedTasks = localStorage.getItem('tasks');
+    if (storedTasks) {
+        tasks = JSON.parse(storedTasks);
+        taskIdCounter = tasks.length > 0 ? tasks[tasks.length - 1].id + 1 : 1; // Set ID counter based on loaded tasks
+    }
+    renderTasks();
+};
 
 function addTask() {
-    const description = taskInput.value.trim();
-    if (description === '') {
-        alert('Please enter a task');
-        return;
+    const taskName = document.getElementById('taskName').value;
+    if (taskName.trim()) {
+        const task = { id: taskIdCounter++, name: taskName, status: 'Pending', description: '' };
+        tasks.push(task);
+        localStorage.setItem('tasks', JSON.stringify(tasks)); // Save to local storage
+        renderTasks();
+        document.getElementById('taskName').value = ''; // Clear input
     }
-
-    const task = {
-        id: Date.now(),
-        description,
-        completed: false
-    };
-
-    tasks.push(task);
-    saveTasksToLocalStorage();
-    renderTasks();
-
-    taskInput.value = '';
 }
 
 function renderTasks(filteredTasks = tasks) {
@@ -37,76 +28,73 @@ function renderTasks(filteredTasks = tasks) {
 
     filteredTasks.forEach(task => {
         const li = document.createElement('li');
-        li.className = task.completed ? 'completed' : '';
+        li.className = task.status === 'Completed' ? 'completed' : '';
+
         li.innerHTML = `
-            ${task.description}
-            <div>
-                <button class="toggle" onclick="toggleTask(${task.id})">Toggle</button>
+            <div class="task-info">
+                <div><strong>ID:</strong> ${task.id}</div>
+                <div><strong>Name:</strong> ${task.name}</div>
+                <div><strong>Status:</strong> ${task.status}</div>
+                <div><strong>Description:</strong> ${task.description || 'No description'}</div>
+            </div>
+            <div class="task-actions">
+                <button class="toggle" onclick="toggleTaskStatus(${task.id})">Toggle Status</button>
                 <button class="edit" onclick="editTask(${task.id})">Edit</button>
                 <button class="delete" onclick="deleteTask(${task.id})">Delete</button>
+                <button class="add-description" onclick="addDescription(${task.id})">Add Description</button>
             </div>
         `;
         taskList.appendChild(li);
     });
 }
 
-function toggleTask(id) {
-    tasks = tasks.map(task => {
-        if (task.id === id) {
-            task.completed = !task.completed;
-        }
-        return task;
-    });
-    saveTasksToLocalStorage();
+function toggleTaskStatus(id) {
+    const task = tasks.find(task => task.id === id);
+    task.status = task.status === 'Completed' ? 'Pending' : 'Completed';
+    localStorage.setItem('tasks', JSON.stringify(tasks)); // Update local storage
     renderTasks();
 }
 
-// Delete
 function deleteTask(id) {
     tasks = tasks.filter(task => task.id !== id);
-    saveTasksToLocalStorage();
+    localStorage.setItem('tasks', JSON.stringify(tasks)); // Update local storage
     renderTasks();
 }
 
-// Edit
 function editTask(id) {
-    const newDescription = prompt('Enter new task description:');
-    if (newDescription) {
-        tasks = tasks.map(task => {
-            if (task.id === id) {
-                task.description = newDescription;
-            }
-            return task;
-        });
-        saveTasksToLocalStorage();
+    const newTaskName = prompt('Enter new task name:');
+    if (newTaskName) {
+        const task = tasks.find(task => task.id === id);
+        task.name = newTaskName;
+        localStorage.setItem('tasks', JSON.stringify(tasks)); // Update local storage
         renderTasks();
     }
 }
 
-// Search
+function addDescription(id) {
+    const newDescription = prompt('Enter task description:');
+    if (newDescription) {
+        const task = tasks.find(task => task.id === id);
+        task.description = newDescription;
+        localStorage.setItem('tasks', JSON.stringify(tasks)); // Update local storage
+        renderTasks();
+    }
+}
+
 function searchTasks() {
-    const keyword = searchInput.value.toLowerCase();
-    const filteredTasks = tasks.filter(task => task.description.toLowerCase().includes(keyword));
+    const searchTerm = document.getElementById('taskSearch').value.toLowerCase();
+    const filteredTasks = tasks.filter(task => task.name.toLowerCase().includes(searchTerm));
     renderTasks(filteredTasks);
 }
 
-// Save to local storage
-function saveTasksToLocalStorage() {
-    localStorage.setItem('tasks', JSON.stringify(tasks));
-}
-
-// Load from local storage
-function loadTasksFromLocalStorage() {
-    renderTasks();
-}
-
-// Visibility
-function toggleTaskList() {
-    if (taskList.classList.contains('hidden')) {
-        taskList.classList.remove('hidden');
-        toggleTableBtn.textContent = 'Hide Tasks';
+function toggleTable() {
+    const taskList = document.getElementById('taskList');
+    const toggleButton = document.getElementById('toggleTable');
+    if (taskList.style.display === 'none') {
+        taskList.style.display = 'block';
+        toggleButton.textContent = 'Hide Table';
     } else {
-        taskList.classList.add('hidden');
-        toggleTableBtn.textContent = 'Show Tasks';
+        taskList.style.display = 'none';
+        toggleButton.textContent = 'Show Table';
     }
 }

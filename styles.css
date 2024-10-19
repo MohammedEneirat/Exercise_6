@@ -7,11 +7,13 @@ body {
 }
 
 .container {
-    width: 500px;
+    width: 100%;
+    max-width: 600px;
     margin: 50px auto;
     background-color: white;
     padding: 20px;
     box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    border-radius: 10px;
 }
 
 h1 {
@@ -21,13 +23,17 @@ h1 {
 
 .task-input, .task-search {
     display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
     margin-bottom: 20px;
 }
 
-#task-input, #search-input {
+.task-input input, .task-search input {
     flex: 1;
+    margin: 5px;
     padding: 10px;
     border: 1px solid #ccc;
+    border-radius: 5px;
 }
 
 button {
@@ -35,7 +41,9 @@ button {
     background-color: #28a745;
     color: white;
     border: none;
+    border-radius: 5px;
     cursor: pointer;
+    margin: 5px;
 }
 
 button:hover {
@@ -49,23 +57,42 @@ ul {
 
 li {
     display: flex;
-    justify-content: space-between;
+    flex-direction: column;
+    justify-content: flex-start;
+    align-items: flex-start;
     padding: 10px;
     border-bottom: 1px solid #ccc;
+    margin: 5px 0;
 }
 
-li.completed {
-    text-decoration: line-through;
+li div {
+    margin-bottom: 5px;
+    font-weight: bold;
+    color: #333;
+}
+
+li.completed div {
     color: grey;
+    text-decoration: line-through;
 }
 
-button.delete, button.edit, button.toggle {
-    margin-left: 10px;
-    background-color: #dc3545;
+button.delete, button.edit, button.toggle, button.add-description {
+    display: block;
+    width: 100%; /* You can change this to 'auto' if you want button width to be based on content */
+    margin-bottom: 5px;
+    border-radius: 5px;
+}
+
+button.edit {
+    background-color: yellow;
 }
 
 button.toggle {
     background-color: #007bff;
+}
+
+button.add-description {
+    background-color: #ffc107;
 }
 
 button:hover.delete {
@@ -77,9 +104,22 @@ button:hover.toggle {
 }
 
 button:hover.edit {
-    background-color: #ffc107;
+    background-color: #ffdb58;
 }
 
-.hidden {
-    display: none;
+button:hover.add-description {
+    background-color: #e0a800;
+}
+
+.task-actions {
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end; /* Align buttons to the right */
+    align-items: flex-end; /* Ensure items are aligned to the right */
+}
+
+@media (max-width: 600px) {
+    .task-input, .task-search {
+        flex-direction: column;
+    }
 }

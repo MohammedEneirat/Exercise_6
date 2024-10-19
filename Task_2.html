@@ -3,28 +3,22 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Task Manager</title>
     <link rel="stylesheet" href="styles.css">
+    <title>Task Manager</title>
 </head>
 <body>
     <div class="container">
         <h1>Task Manager</h1>
-
         <div class="task-input">
-            <input type="text" id="task-input" placeholder="Enter a new task...">
-            <button id="add-task">Add Task</button>
+            <input type="text" id="taskName" placeholder="Enter task name" />
+            <button onclick="addTask()">Add Task</button>
         </div>
-
-        <!-- Search Task -->
         <div class="task-search">
-            <input type="text" id="search-input" placeholder="Search tasks...">
+            <input type="text" id="taskSearch" placeholder="Search tasks..." oninput="searchTasks()" />
         </div>
-
-        <button id="toggle-table">Hide Tasks</button>
-
-        <ul id="task-list"></ul>
+        <button id="toggleTable" onclick="toggleTable()">Hide Table</button>
+        <ul id="taskList"></ul>
     </div>
-
     <script src="script.js"></script>
 </body>
 </html>
